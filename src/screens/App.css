@@ -1,0 +1,43 @@
+body{
+    min-width:800px; 
+}
+.topp{
+    display:flex; 
+}
+.board{
+    width:75%; 
+}
+.chat{
+    width:25%; 
+}
+@media only screen and (max-width:780px){  
+    .topp{
+        flex-direction: column;
+    }
+    .board{
+        width:100%; 
+    }
+    .chat{
+        width:100%; 
+    }
+}
+
+::-webkit-scrollbar {
+    width: 12px; 
+    height: 12px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 10px; 
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #797979; 
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #6b6a6a; 
+    border-radius: 10px; 
+  }
+  
