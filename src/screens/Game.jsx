@@ -19,6 +19,7 @@ function Game() {
   const [flag,setFlag] = useState(true); 
   const [moves,setMoves] = useState([{}]); 
   const [white,setWhite] = useState(true); 
+  const [last,setLast]  = useState(null); 
 
   useEffect(()=>{
     if(!socket)return ;
@@ -38,6 +39,7 @@ function Game() {
       }
       if(data.type === 'LOG'){
         setMoves((prevMoves) => [...prevMoves, { player: data.player, move: data.move }]);
+        setLast(data.move); 
       }
       if(data.type === 'PIECES'){
         if(data.color === 'BLACK'){
@@ -54,7 +56,7 @@ function Game() {
         <div  className="h-screen w-screen py-4 px-14 flex items-center justify-center">
           <div className="topp shadow-lg h-full w-3/4">
             <div className="board bg-green-600 h-full">
-              <ChessBoard board={gameState} socket={socket} white={white}/>
+              <ChessBoard board={gameState} socket={socket} white={white} last={last}/>
             </div>  
             <div className="flex flex-col items-center justify-center chat p-3 bg-stone-700 h-full">
               <MoveLog moves = {moves}/>
