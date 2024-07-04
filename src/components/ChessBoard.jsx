@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { json } from "react-router-dom";
 
 const pieces = new Map([
   ['r', 'bR'], ['n', 'bH'], ['b', 'bB'], ['q', 'bQ'], ['k', 'bK'], ['p', 'bP'],
@@ -38,54 +37,59 @@ const parseChessBoardString = (boardString) => {
   while (board.length < 7) {
     board.push(["", "", "", "", "", "", "", ""]);
   }
-  board.splice(0,1); 
+  board.splice(0, 1);
 
   return board;
 };
 
 function ChessBoard(props) {
-    const [from,setFrom] = useState(null); 
-    const [selectedSquare,setSelectedSquare] = useState(null); 
-    const board = parseChessBoardString(props.board);
-    const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+  const [from, setFrom] = useState(null);
+  const [selectedSquare, setSelectedSquare] = useState(null);
+  const board = parseChessBoardString(props.board);
+  const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
-    var colr = {}; 
-    if(!props.white){
-      colr = {transform: 'rotate(180deg)'}; 
-    }
-    return (
+  const colr = !props.white ? { transform: 'rotate(180deg)' } : {};
+
+  return (
     <div style={colr} className="w-full h-full flex flex-col">
-        {board.map((row, rowIdx) => (
+      {board.map((row, rowIdx) => (
         <div key={rowIdx} className="flex flex-1">
-            {row.map((piece, colIdx) => (
-            <div
+          {row.map((piece, colIdx) => {
+            const currentSquare = letters[colIdx] + (8 - rowIdx);
+            const isLastMove = props.last === currentSquare;
+            const isSelected = selectedSquare?.rowIdx === rowIdx && selectedSquare?.colIdx === colIdx;
+            const isDarkSquare = (rowIdx + colIdx) % 2 === 0;
+
+            return (
+              <div
                 key={`${rowIdx}-${colIdx}`}
                 className={`flex-1 flex justify-center items-center ${
-                selectedSquare?.rowIdx === rowIdx && selectedSquare?.colIdx === colIdx ? 'bg-blue-500' : 
-                (rowIdx + colIdx) % 2 === 0 ? "bg-orange-50" : "bg-lime-600"}`}
+                  isSelected ? 'bg-blue-500' :
+                  isLastMove ? 'bg-lime-400' :
+                  isDarkSquare ? "bg-orange-50" : "bg-lime-600"
+                }`}
                 style={{ minHeight: '50px', minWidth: '50px', boxSizing: 'border-box' }}
-                onClick={()=>{
-                    var temp = letters[colIdx] + (8-rowIdx); 
-                    if(!from){
-                        setFrom(temp); 
-                        setSelectedSquare({rowIdx:rowIdx,colIdx:colIdx}); 
-                    }else{
-                        props.socket.send(JSON.stringify({type:"MOVE",from:from,to : temp})); 
-                        console.log(temp); 
-                        setFrom(null); 
-                        setSelectedSquare(null); 
-                    }
+                onClick={() => {
+                  if (!from) {
+                    setFrom(currentSquare);
+                    setSelectedSquare({ rowIdx, colIdx });
+                  } else {
+                    props.socket.send(JSON.stringify({ type: "MOVE", from: from, to: currentSquare }));
+                    setFrom(null);
+                    setSelectedSquare(null);
+                  }
                 }}
-            >
+              >
                 {piece && (
-                <img className="" style={colr} src={`/pieces/${pieces.get(piece)}.png`} alt="" />
+                  <img style={colr} src={`/pieces/${pieces.get(piece)}.png`} alt="" />
                 )}
-            </div>
-            ))}
+              </div>
+            );
+          })}
         </div>
-        ))}
+      ))}
     </div>
-    );
+  );
 }
 
 export default ChessBoard;
