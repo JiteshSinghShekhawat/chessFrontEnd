@@ -13,7 +13,7 @@ export const GAME_OVER = "game_over";
 
 
 function Game() {
-  const [gameState,setGameState] = useState('8.nbqkbnr7pppppppp6........5........4........3........2PPPPPPPP1RNBQKBNR'); 
+  const [gameState,setGameState] = useState('8........7........6........5........4........3........2PPPPPPPP1RNBQKBNR'); 
   const [message,setMessage] = useState(null); 
   const socket = useSocket(); 
   const [flag,setFlag] = useState(true); 
