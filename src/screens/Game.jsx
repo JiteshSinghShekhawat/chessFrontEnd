@@ -4,6 +4,7 @@ import ChessBoard from "../components/ChessBoard";
 import MoveLog from "../components/MoveLog";
 import { json } from "react-router-dom";
 import './App.css';
+import ChessTimer from "../components/Timer";
 
 export const INIT_GAME = "init_game";   
 export const MOVE = "move"; 
@@ -20,13 +21,14 @@ function Game() {
   const [moves,setMoves] = useState([{}]); 
   const [white,setWhite] = useState(true); 
   const [last,setLast]  = useState(null); 
+  const [timer1,setTimer1] = useState({minutes: 3, seconds:0}); 
+  const [timer2,setTimer2] = useState({minutes: 3, seconds:0}); 
 
   useEffect(()=>{
     if(!socket)return ;
 
     socket.onmessage = (event)=>{
       const data = JSON.parse(event.data); 
-      console.log(data); 
       if(data.type === 'board'){
         setGameState(data.board);  
         setMessage(null); 
@@ -48,6 +50,16 @@ function Game() {
           setWhite(true); 
         }
       }
+      if(data.type === 'TIME'){
+        setTimer1({
+          minutes : data.black.minutes, 
+          seconds: data.black.seconds
+        }); 
+        setTimer2({
+          minutes : data.white.minutes, 
+          seconds: data.white.seconds
+        }); 
+      }
     }
   },[socket]); 
 
@@ -59,6 +71,7 @@ function Game() {
               <ChessBoard board={gameState} socket={socket} white={white} last={last}/>
             </div>  
             <div className="flex flex-col items-center justify-center chat p-3 bg-stone-700 h-full">
+              <ChessTimer timer = {timer1}/>
               <MoveLog moves = {moves}/>
               <div className="flex-3 text-white font-medium m-3">{message}</div>
              {flag && <button className="flex-2 w-3/4 bg-green-800 py-2 px-3 rounded-lg" onClick={()=>{
@@ -67,7 +80,7 @@ function Game() {
             }}>
               Play 
             </button>}
-
+            <ChessTimer timer={timer2}/>
             </div>
           </div>
         </div>
